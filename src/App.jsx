@@ -43,6 +43,10 @@ export default function App() {
 
         const data = await fetchImages(search, currentPage);
 
+        if (data.images.length === 0) {
+          throw new Error();
+        }
+
         setImages((prevImages) => [...prevImages, ...data.images]);
         setTotalPages(data.totalPages);
       } catch {
@@ -62,13 +66,19 @@ export default function App() {
     <div className={css.container}>
       <SearchBar onSubmit={handleSearch} />
 
-      {isError && <ErrorMessage message={isError} />}
-
-      {hasImages && <ImageGallery images={images} onImageClick={openModal} />}
-
-      {isLoading && <Loader loading={isLoading} />}
-
-      {hasImages && !isLoading && hasMore && <LoadMoreBtn onClick={loadMore} />}
+      {isError ? (
+        <ErrorMessage message={isError} />
+      ) : (
+        <>
+          {hasImages && (
+            <ImageGallery images={images} onImageClick={openModal} />
+          )}
+          {isLoading && <Loader loading={isLoading} />}
+          {hasImages && !isLoading && hasMore && (
+            <LoadMoreBtn onClick={loadMore} />
+          )}
+        </>
+      )}
 
       <ImageModal
         isOpen={selectedImage}
